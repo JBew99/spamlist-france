@@ -69,16 +69,6 @@ export interface PlayerStats {
   progression: { date: number; points: number }[];
 }
 
-export interface ActivityItem {
-  id: string;
-  type: 'completion' | 'rank_up' | 'clan_join' | 'level_add';
-  title: string;
-  description: string;
-  timestamp: number;
-  userId: string;
-  userName: string;
-}
-
 export interface Clan {
   id: string;
   name: string;

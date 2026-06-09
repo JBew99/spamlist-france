@@ -1,5 +1,10 @@
 
-import { Level, PlayerStats, Clan, LevelPack, ChangelogEntry, ActivityItem } from "./types";
+import { Level, PlayerStats, Clan, LevelPack, ChangelogEntry } from "./types";
+
+/**
+ * MODIFIE CES DONNÉES POUR CHANGER LE CONTENU DU SITE
+ * Chaque niveau, clan ou pack a un "id" unique.
+ */
 
 export const MOCK_LEVELS: Level[] = [
   {
