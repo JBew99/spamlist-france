@@ -3,7 +3,7 @@ import { Level, PlayerStats, Clan, LevelPack, ChangelogEntry } from "./types";
 
 /**
  * MODIFIE CES DONNÉES POUR CHANGER LE CONTENU DU SITE
- * Chaque niveau, clan ou pack a un "id" unique.
+ * C'est ici que tu peux ajouter tes propres niveaux et clans.
  */
 
 export const MOCK_LEVELS: Level[] = [

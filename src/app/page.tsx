@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Zap, Users, ShieldCheck, Activity, ArrowRight, CheckCircle2, Swords, TrendingUp } from "lucide-react";
+import { Trophy, Zap, Users, ShieldCheck, Activity, ArrowRight, CheckCircle2, Swords, TrendingUp, History, Package } from "lucide-react";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection, query, orderBy, limit, where } from "firebase/firestore";
 import { useMemo } from "react";
