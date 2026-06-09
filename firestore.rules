@@ -19,36 +19,34 @@ service cloud.firestore {
     // Public read for lists/levels (no auth required)
     match /levels/{document=**} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.status == 'pending';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
     
     // Users collection
     match /users/{userId} {
-      // Users can read their own profile
-      allow read: if isSignedIn() && (isOwner(userId) || isAdmin());
+      // Public leaderboard and profile reads
+      allow read: if true;
       
-      // Users can create their own profile (via auth trigger)
+      // Users can create their own profile
       allow create: if isSignedIn() && isOwner(userId);
       
-      // Only admins can modify user data
+      // Only admins can modify or delete user data
       allow update: if isAdmin();
-      
-      // Admins only delete
       allow delete: if isAdmin();
     }
     
     // Records collection (user submissions)
     match /records/{recordId} {
-      // Users can read all (for leaderboard)
-      allow read: if isSignedIn();
+      // Public read for approved records, while owners and admins can also read private records
+      allow read: if resource.data.status == 'approved' || isOwner(resource.data.userId) || isAdmin();
       
-      // Users can create their own records
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      // Users can create their own records and they must be pending
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.status == 'pending';
       
-      // Only admins can approve/reject
-      allow update: if isAdmin() && request.resource.data.userId == resource.data.userId;
-      
-      // Only admins delete
+      // Only admins can approve/reject or delete
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
     
