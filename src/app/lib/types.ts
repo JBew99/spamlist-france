@@ -1,6 +1,15 @@
 export type LevelStatus = 'pending' | 'approved' | 'rejected';
 export type Platform = 'PC' | 'Mobile';
-export type SpamType = 'Alternating' | 'Alt-Jitter' | 'Jitter' | 'Button Mashing' | 'Rake' | 'Lip Spam' | 'Butterfly' | 'Telekinesis' | 'Scroll Clicking';
+export type SpamType = 
+  | 'Alternating' 
+  | 'Alt-Jitter' 
+  | 'Jitter' 
+  | 'Button Mashing' 
+  | 'Rake' 
+  | 'Lip Spam' 
+  | 'Butterfly' 
+  | 'Telekinesis' 
+  | 'Scroll Clicking';
 
 export type UserRank = 'Bronze' | 'Argent' | 'Or' | 'Platine' | 'Diamant' | 'Élite';
 
@@ -26,8 +35,8 @@ export interface Record {
 }
 
 export interface Level {
-  id: string;
-  levelId: string;
+  id: string; // ID stable interne (ex: lvl-1)
+  levelId: string; // ID Ingame Geometry Dash
   name: string;
   creator: string;
   difficulty: number;
@@ -53,7 +62,7 @@ export interface PlayerStats {
   bestSpamType: SpamType;
   platform: Platform;
   clanId?: string;
-  trustScore: number; // 0-100
+  trustScore: number; // 0-100 (Score de confiance invisible pour les admins)
   history: ActivityItem[];
 }
 
@@ -80,7 +89,7 @@ export interface Clan {
 export interface LevelPack {
   id: string;
   name: string;
-  levels: string[];
+  levels: string[]; // IDs des niveaux (lvl-X)
   rewardPoints: number;
   description: string;
 }

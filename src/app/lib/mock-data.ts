@@ -52,8 +52,8 @@ export const MOCK_PLAYERS: PlayerStats[] = [
 ];
 
 export const MOCK_CLANS: Clan[] = [
-  { id: "clan-1", name: "Spam Elites France", tag: "SEF", points: 2750, membersCount: 12, description: "Le clan numéro 1 en France.", rank: 1 },
-  { id: "clan-2", name: "Click Masters", tag: "CM", points: 1420, membersCount: 8, description: "La précision avant tout.", rank: 2 },
+  { id: "clan-1", name: "Spam Elites France", tag: "SEF", points: 2750, rank: 1, membersCount: 12, description: "Le clan numéro 1 en France." },
+  { id: "clan-2", name: "Click Masters", tag: "CM", points: 1420, rank: 2, membersCount: 8, description: "La précision avant tout." },
 ];
 
 export const MOCK_PACKS: LevelPack[] = [

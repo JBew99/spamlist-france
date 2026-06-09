@@ -6,11 +6,12 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, ShieldAlert, Zap, Lock, Info, AlertTriangle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ShieldAlert, Zap, Lock, Info, AlertTriangle, Check, X, ShieldCheck, Eye } from "lucide-react";
 import { MOCK_PLAYERS } from "@/app/lib/mock-data";
 
 export default function AdminPage() {
-  const [isAdmin] = useState(true); // Simulé
+  const [isAdmin] = useState(true); // Simulé pour le MVP
   
   if (!isAdmin) {
     return (
@@ -45,33 +46,61 @@ export default function AdminPage() {
           <TabsList className="bg-muted/50 gold-border p-1 h-12 mb-8">
             <TabsTrigger value="records" className="gap-2">Records en Attente</TabsTrigger>
             <TabsTrigger value="levels" className="gap-2">Propositions Niveaux</TabsTrigger>
+            <TabsTrigger value="users" className="gap-2">Gestion Joueurs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="records">
             <Card className="border-border bg-card/50 overflow-hidden">
               <CardContent className="p-0">
-                <div className="p-8 text-center text-muted-foreground italic">
-                  <Info className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                  Tous les records ont été traités. Le Trust Score global est stable.
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Joueur</TableHead>
+                      <TableHead>Niveau</TableHead>
+                      <TableHead>Trust Score</TableHead>
+                      <TableHead>Preuve</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow className="border-border">
+                      <TableCell className="font-bold">DarkSpam</TableCell>
+                      <TableCell>Ultra Spam v2</TableCell>
+                      <TableCell><Badge className="bg-green-500/20 text-green-500">92% High</Badge></TableCell>
+                      <TableCell><Button variant="link" size="sm" className="text-primary"><Eye className="h-4 w-4 mr-1"/> Vidéo</Button></TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button size="sm" variant="outline" className="text-green-500 border-green-500/30"><Check className="h-4 w-4"/></Button>
+                        <Button size="sm" variant="outline" className="text-destructive border-destructive/30"><X className="h-4 w-4"/></Button>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
-            
-            <div className="mt-12 grid gap-6">
+          </TabsContent>
+
+          <TabsContent value="users">
+            <div className="grid gap-6">
               <h3 className="text-xl font-bold silver-text flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-primary" /> Joueurs à Surveiller (Low Trust)
+                <AlertTriangle className="h-5 w-5 text-primary" /> Surveillance Trust Score
               </h3>
-              {MOCK_PLAYERS.filter(p => p.trustScore < 80).map(p => (
-                <Card key={p.id} className="bg-destructive/5 border-destructive/20">
-                  <CardContent className="p-6 flex items-center justify-between">
-                    <div>
-                      <p className="font-bold">{p.name}</p>
-                      <p className="text-xs text-muted-foreground">Trust Score : {p.trustScore}%</p>
-                    </div>
-                    <Badge variant="destructive">Suspicion de Macro</Badge>
-                  </CardContent>
-                </Card>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {MOCK_PLAYERS.map(p => (
+                  <Card key={p.id} className={`${p.trustScore < 80 ? 'bg-destructive/5 border-destructive/20' : 'bg-card/50 border-border'}`}>
+                    <CardContent className="p-6 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold">{p.name}</p>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <ShieldCheck className="h-3 w-3" /> Trust: {p.trustScore}%
+                        </p>
+                      </div>
+                      <Badge variant={p.trustScore < 80 ? 'destructive' : 'outline'}>
+                        {p.trustScore < 80 ? 'Suspect' : 'Fiable'}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
 

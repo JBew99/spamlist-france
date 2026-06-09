@@ -6,14 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Send, CheckCircle2, Trophy, PlusCircle, ShieldAlert } from "lucide-react";
+import { Send, CheckCircle2, Trophy, PlusCircle, ShieldAlert, Info } from "lucide-react";
 
 const recordSchema = z.object({
   levelId: z.string().min(1, "L'ID du niveau est requis"),
@@ -49,7 +49,7 @@ export default function SoumettrePage() {
 
   const onRecordSubmit = () => {
     setIsSubmitted(true);
-    toast({ title: "Record envoyé", description: "Vérification en cours par Pulse AI." });
+    toast({ title: "Record envoyé", description: "Vérification en cours par l'équipe de modération." });
   };
 
   if (isSubmitted) {
@@ -57,11 +57,11 @@ export default function SoumettrePage() {
       <div className="flex min-h-screen flex-col">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full text-center gold-border bg-card shadow-2xl">
+          <Card className="max-w-md w-full text-center gold-border bg-card shadow-2xl animate-in zoom-in duration-300">
             <CardContent className="pt-10 pb-10 flex flex-col items-center">
               <CheckCircle2 className="h-20 w-20 text-primary mb-4" />
               <h2 className="text-3xl font-black gold-text mb-2">Soumission Enregistrée</h2>
-              <p className="text-muted-foreground mb-6 text-sm">Votre Trust Score actuel permet une validation estimée sous 24-48h.</p>
+              <p className="text-muted-foreground mb-6 text-sm">Votre record est en file d'attente. Votre Trust Score actuel permet une validation estimée sous 24-48h.</p>
               <Button onClick={() => setIsSubmitted(false)} className="bg-primary text-black font-black">Nouvelle Soumission</Button>
             </CardContent>
           </Card>
@@ -99,23 +99,23 @@ export default function SoumettrePage() {
                   <form onSubmit={recordForm.handleSubmit(onRecordSubmit)} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField control={recordForm.control} name="playerName" render={({ field }) => (
-                        <FormItem><FormLabel>Pseudo Ingame</FormLabel><FormControl><Input placeholder="ex: Nexus" className="gold-border" {...field} /></FormControl></FormItem>
+                        <FormItem><FormLabel>Pseudo Ingame</FormLabel><FormControl><Input placeholder="ex: Nexus" className="gold-border bg-background" {...field} /></FormControl><FormMessage/></FormItem>
                       )} />
                       <FormField control={recordForm.control} name="levelId" render={({ field }) => (
-                        <FormItem><FormLabel>ID du Niveau (Liste)</FormLabel><FormControl><Input placeholder="L'ID list du niveau" className="gold-border" {...field} /></FormControl></FormItem>
+                        <FormItem><FormLabel>ID du Niveau (Liste)</FormLabel><FormControl><Input placeholder="L'ID list du niveau" className="gold-border bg-background" {...field} /></FormControl><FormMessage/></FormItem>
                       )} />
                     </div>
                     <FormField control={recordForm.control} name="videoUrl" render={({ field }) => (
-                      <FormItem><FormLabel>Lien de la Preuve Vidéo (Impératif)</FormLabel><FormControl><Input placeholder="https://youtube.com/..." className="gold-border" {...field} /></FormControl></FormItem>
+                      <FormItem><FormLabel>Lien de la Preuve Vidéo (YouTube / Twitch)</FormLabel><FormControl><Input placeholder="https://youtube.com/..." className="gold-border bg-background" {...field} /></FormControl><FormMessage/></FormItem>
                     )} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <FormField control={recordForm.control} name="fps" render={({ field }) => (
-                        <FormItem><FormLabel>FPS</FormLabel><FormControl><Input type="number" className="gold-border" {...field} /></FormControl></FormItem>
+                        <FormItem><FormLabel>FPS</FormLabel><FormControl><Input type="number" placeholder="ex: 240" className="gold-border bg-background" {...field} /></FormControl></FormItem>
                       )} />
                       <FormField control={recordForm.control} name="platform" render={({ field }) => (
                         <FormItem><FormLabel>Plateforme</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger className="gold-border"><SelectValue /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="gold-border bg-background"><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent><SelectItem value="PC">PC</SelectItem><SelectItem value="Mobile">Mobile</SelectItem></SelectContent>
                           </Select>
                         </FormItem>
@@ -123,9 +123,9 @@ export default function SoumettrePage() {
                       <FormField control={recordForm.control} name="spamType" render={({ field }) => (
                         <FormItem><FormLabel>Style de Spam</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger className="gold-border"><SelectValue /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="gold-border bg-background"><SelectValue /></SelectTrigger></FormControl>
                             <SelectContent>
-                              {['Butterfly', 'Jitter', 'Alternating', 'Rake', 'Lip Spam'].map(t => (
+                              {['Butterfly', 'Jitter', 'Alternating', 'Rake', 'Lip Spam', 'Alt-Jitter'].map(t => (
                                 <SelectItem key={t} value={t}>{t}</SelectItem>
                               ))}
                             </SelectContent>
@@ -133,7 +133,7 @@ export default function SoumettrePage() {
                         </FormItem>
                       )} />
                     </div>
-                    <Button type="submit" className="w-full h-14 bg-primary text-black font-black text-xl hover:scale-[1.01] transition-all">Envoyer le Record <Send className="ml-2 h-5 w-5" /></Button>
+                    <Button type="submit" className="w-full h-14 bg-primary text-black font-black text-xl hover:scale-[1.01] transition-all shadow-lg shadow-primary/10">Envoyer le Record <Send className="ml-2 h-5 w-5" /></Button>
                   </form>
                 </Form>
               </CardContent>
@@ -147,19 +147,26 @@ export default function SoumettrePage() {
                   <form className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <FormField control={levelForm.control} name="name" render={({ field }) => (
-                        <FormItem><FormLabel>Nom du Niveau</FormLabel><FormControl><Input placeholder="ex: Ultra Spam v3" className="gold-border" {...field} /></FormControl></FormItem>
+                        <FormItem><FormLabel>Nom du Niveau</FormLabel><FormControl><Input placeholder="ex: Ultra Spam v3" className="gold-border bg-background" {...field} /></FormControl></FormItem>
                       )} />
                       <FormField control={levelForm.control} name="creator" render={({ field }) => (
-                        <FormItem><FormLabel>Créateur</FormLabel><FormControl><Input placeholder="Nom du créateur" className="gold-border" {...field} /></FormControl></FormItem>
+                        <FormItem><FormLabel>Créateur</FormLabel><FormControl><Input placeholder="ex: Cliquos" className="gold-border bg-background" {...field} /></FormControl></FormItem>
                       )} />
                     </div>
+                    <FormField control={levelForm.control} name="levelId" render={({ field }) => (
+                      <FormItem><FormLabel>ID Geometry Dash</FormLabel><FormControl><Input placeholder="ID Ingame (ex: 87654321)" className="gold-border bg-background" {...field} /></FormControl></FormItem>
+                    )} />
                     <FormField control={levelForm.control} name="videoProof" render={({ field }) => (
-                      <FormItem><FormLabel>Preuve de Vérification</FormLabel><FormControl><Input placeholder="Lien YouTube" className="gold-border" {...field} /></FormControl></FormItem>
+                      <FormItem><FormLabel>Vidéo de Vérification</FormLabel><FormControl><Input placeholder="Lien YouTube de la vérification" className="gold-border bg-background" {...field} /></FormControl></FormItem>
                     )} />
                     <FormField control={levelForm.control} name="description" render={({ field }) => (
-                      <FormItem><FormLabel>Description Technique</FormLabel><FormControl><Textarea placeholder="Précisez les mécaniques de spam..." className="gold-border" {...field} /></FormControl></FormItem>
+                      <FormItem><FormLabel>Description Technique</FormLabel><FormControl><Textarea placeholder="Précisez le style de spam requis et les spécificités..." className="gold-border bg-background" {...field} /></FormControl></FormItem>
                     )} />
-                    <Button type="button" className="w-full h-14 bg-secondary text-black font-black text-xl">Proposer à l'Élite <PlusCircle className="ml-2 h-5 w-5" /></Button>
+                    <div className="p-4 bg-muted/50 rounded-xl flex items-start gap-3 border border-border">
+                       <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                       <p className="text-xs text-muted-foreground leading-relaxed">Les niveaux proposés doivent être jugés "List-Worthy" par l'Elite. Un niveau trop simple ou buggé sera rejeté.</p>
+                    </div>
+                    <Button type="button" className="w-full h-14 bg-secondary text-black font-black text-xl hover:scale-[1.01] transition-all">Proposer à l'Élite <PlusCircle className="ml-2 h-5 w-5" /></Button>
                   </form>
                 </Form>
               </CardContent>

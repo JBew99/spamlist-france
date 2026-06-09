@@ -12,7 +12,7 @@
     --popover-foreground: 0 0% 98%;
     --primary: 47 95% 55%; /* Gold */
     --primary-foreground: 240 10% 3.9%;
-    --secondary: 210 10% 85%; /* Silver/Platinum */
+    --secondary: 210 10% 85%; /* Silver */
     --secondary-foreground: 240 10% 3.9%;
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%;
@@ -32,22 +32,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
     background-image: 
       radial-gradient(at 0% 0%, hsla(47, 95%, 55%, 0.03) 0px, transparent 50%),
       radial-gradient(at 100% 100%, hsla(210, 10%, 85%, 0.03) 0px, transparent 50%);
   }
 }
 
-.neon-gold {
-  box-shadow: 0 0 15px hsla(47, 95%, 55%, 0.2), 0 0 30px hsla(47, 95%, 55%, 0.1);
-}
-
 .gold-text {
   background: linear-gradient(to bottom right, #f6d365 0%, #fda085 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.3));
+  filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.2));
 }
 
 .silver-text {
