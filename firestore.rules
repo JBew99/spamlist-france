@@ -9,7 +9,7 @@ service cloud.firestore {
     
     function isAdmin() {
       // Replace with your admin emails
-      return request.auth.token.email in ['admin@spamlist.fr', 'mod@spamlist.fr'];
+      return request.auth.token.email in ['jblash99@gmail.com', 'admin@spamlist.fr', 'mod@spamlist.fr'];
     }
     
     function isOwner(uid) {
