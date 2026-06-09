@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy, Zap, Users, ShieldCheck, Activity, ArrowRight, Star, CheckCircle2, Swords, TrendingUp } from "lucide-react";
+import { Trophy, Zap, Users, ShieldCheck, Activity, ArrowRight, CheckCircle2, Swords, TrendingUp } from "lucide-react";
 import { useFirestore, useCollection } from "@/firebase";
 import { collection, query, orderBy, limit, where } from "firebase/firestore";
 import { useMemo } from "react";
@@ -41,7 +41,6 @@ export default function Home() {
               fill
               className="object-cover"
               priority
-              data-ai-hint="neon electronics"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
@@ -63,8 +62,8 @@ export default function Home() {
               
               <div className="flex flex-col sm:flex-row gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
                 <Link href="/list">
-                  <Button size="lg" className="h-16 px-12 text-xl font-black bg-primary text-black rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all group">
-                    Voir la Liste <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                  <Button size="lg" className="h-16 px-12 text-xl font-black bg-primary text-black rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all animate-shine">
+                    Voir la Liste <ArrowRight className="ml-2 h-6 w-6" />
                   </Button>
                 </Link>
                 <Link href="/soumettre">
@@ -85,8 +84,8 @@ export default function Home() {
                 <Activity className="h-6 w-6 text-primary" />
                 <h2 className="text-xl font-black silver-text uppercase tracking-widest">Flux d'Activité Live</h2>
               </div>
-              <div className="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                <TrendingUp className="h-4 w-4 text-green-500" /> Pulse AI Moderation Active
+              <div className="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-muted-foreground items-center">
+                <TrendingUp className="h-4 w-4 text-green-500 mr-2" /> Système Pulse Connecté
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -101,7 +100,7 @@ export default function Home() {
                   </div>
                 </div>
               )) : (
-                <div className="col-span-3 text-center text-muted-foreground italic text-sm">Chargement de l'activité prestige...</div>
+                <div className="col-span-3 text-center py-10 text-muted-foreground italic text-sm">Chargement du fil de prestige...</div>
               )}
             </div>
           </div>
@@ -128,7 +127,7 @@ export default function Home() {
                 <CardContent className="pt-10 pb-10 flex flex-col items-start space-y-4">
                   <div className="p-4 rounded-2xl bg-secondary/10 text-secondary border border-secondary/20"><ShieldCheck className="h-8 w-8" /></div>
                   <h3 className="text-2xl font-bold silver-text uppercase">Confiance Blindée</h3>
-                  <p className="text-muted-foreground leading-relaxed">Notre système Trust Score récompense la régularité. Plus vous êtes fiable, plus vos records sont validés vite.</p>
+                  <p className="text-muted-foreground leading-relaxed">Un système Trust Score qui récompense la régularité. Vos preuves sont analysées par l'Élite.</p>
                 </CardContent>
               </Card>
               <Card className="bg-card/50 border-white/5 hover:border-white/20 transition-all group overflow-hidden relative">
@@ -153,8 +152,8 @@ export default function Home() {
             <span className="text-xs text-muted-foreground">| L'Élite de Geometry Dash France</span>
           </div>
           <div className="flex gap-8">
-            <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Mentions</Link>
-            <Link href="https://discord.gg/geometrydash" className="text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Discord Officiel</Link>
+            <Link href="/changelog" className="text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Mises à jour</Link>
+            <Link href="https://discord.gg/geometrydash" className="text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">Discord</Link>
           </div>
         </div>
       </footer>

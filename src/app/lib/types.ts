@@ -24,7 +24,9 @@ export interface LevelRating {
 export interface Record {
   id: string;
   levelId: string;
+  levelName: string;
   playerName: string;
+  userId: string;
   videoUrl: string;
   timestamp: number;
   status: LevelStatus;
@@ -64,7 +66,7 @@ export interface PlayerStats {
   platform: Platform;
   clanId?: string;
   trustScore: number; // 0-100
-  history: ActivityItem[];
+  progression: { date: number; points: number }[];
 }
 
 export interface ActivityItem {

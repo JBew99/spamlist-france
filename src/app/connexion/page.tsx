@@ -20,9 +20,8 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, UserPlus, Chrome, ShieldCheck, Mail, Loader2 } from "lucide-react";
+import { LogIn, UserPlus, Chrome, ShieldCheck, Loader2 } from "lucide-react";
 
-// Logo X (anciennement Twitter) en SVG car Lucide n'a pas le nouveau logo X
 const XLogo = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -51,7 +50,7 @@ export default function ConnexionPage() {
       const userDoc = await getDoc(doc(firestore, "users", user.uid));
       if (!userDoc.exists()) {
         await setDoc(doc(firestore, "users", user.uid), {
-          name: user.displayName || "Spammeur Inconnu",
+          name: user.displayName || "Spammeur Elite",
           email: user.email,
           points: 0,
           completions: 0,
@@ -63,7 +62,7 @@ export default function ConnexionPage() {
         });
       }
       
-      toast({ title: "Accès autorisé", description: `Bienvenue dans l'Elite, ${user.displayName} !` });
+      toast({ title: "Accès autorisé", description: `Bienvenue dans l'Elite, ${user.displayName || 'Spammeur'} !` });
       router.push("/");
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erreur d'accès", description: "La connexion a échoué." });
@@ -81,7 +80,7 @@ export default function ConnexionPage() {
       toast({ title: "Connexion réussie", description: "Ravi de vous revoir." });
       router.push("/");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erreur", description: "Identifiants invalides ou compte inexistant." });
+      toast({ variant: "destructive", title: "Erreur", description: "Identifiants invalides." });
     } finally {
       setLoading(false);
     }
@@ -91,7 +90,6 @@ export default function ConnexionPage() {
     e.preventDefault();
     if (!auth || !firestore) return;
     
-    // Validation du mot de passe
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
     if (!passwordRegex.test(password)) {
       toast({ 
@@ -127,13 +125,13 @@ export default function ConnexionPage() {
 
   const handleResetPassword = async () => {
     if (!auth || !email) {
-      toast({ variant: "destructive", title: "Email manquant", description: "Veuillez entrer votre email pour réinitialiser le mot de passe." });
+      toast({ variant: "destructive", title: "Email requis", description: "Entrez votre email pour réinitialiser." });
       return;
     }
     setResetLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
-      toast({ title: "Email envoyé", description: "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe." });
+      toast({ title: "Email envoyé", description: "Vérifiez votre boîte mail." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erreur", description: "Impossible d'envoyer l'email." });
     } finally {
@@ -145,7 +143,7 @@ export default function ConnexionPage() {
     <div className="flex min-h-screen flex-col">
       <Navigation />
       <main className="flex-1 flex items-center justify-center p-6 bg-black/40">
-        <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h1 className="text-5xl font-black gold-text uppercase tracking-tighter mb-2">Accès Elite</h1>
             <p className="text-muted-foreground text-sm uppercase tracking-widest font-bold">Forge ton prestige sur la SpamList</p>
@@ -158,7 +156,7 @@ export default function ConnexionPage() {
             </TabsList>
 
             <TabsContent value="login">
-              <Card className="bg-card/50 gold-border backdrop-blur-xl border-t-4 border-t-primary">
+              <Card className="bg-card/50 gold-border border-t-4 border-t-primary">
                 <CardContent className="pt-8 space-y-6">
                   <div className="space-y-4">
                     <div className="grid gap-2">
@@ -168,8 +166,8 @@ export default function ConnexionPage() {
                     <div className="grid gap-2">
                       <div className="flex justify-between items-center">
                         <Label htmlFor="password">Mot de passe</Label>
-                        <button onClick={handleResetPassword} className="text-[10px] uppercase font-black text-primary hover:underline" disabled={resetLoading}>
-                          {resetLoading ? "Envoi..." : "Mot de passe oublié ?"}
+                        <button onClick={handleResetPassword} className="text-[10px] uppercase font-black text-primary hover:underline">
+                          Mot de passe oublié ?
                         </button>
                       </div>
                       <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="gold-border bg-background/50 h-12" />
@@ -193,7 +191,7 @@ export default function ConnexionPage() {
             </TabsContent>
 
             <TabsContent value="register">
-              <Card className="bg-card/50 gold-border backdrop-blur-xl border-t-4 border-t-primary">
+              <Card className="bg-card/50 gold-border border-t-4 border-t-primary">
                 <CardContent className="pt-8 space-y-6">
                   <div className="space-y-4">
                     <div className="grid gap-2">
@@ -230,7 +228,7 @@ export default function ConnexionPage() {
 
           <div className="flex items-center justify-center gap-3 text-muted-foreground p-5 bg-primary/5 rounded-2xl border border-primary/20">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            <p className="text-[11px] uppercase font-black tracking-widest text-center">Système de Modération Pulse IA Connecté</p>
+            <p className="text-[11px] uppercase font-black tracking-widest text-center">Sécurisé par le Système Pulse IA</p>
           </div>
         </div>
       </main>

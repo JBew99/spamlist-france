@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ShieldAlert, Zap, Lock, Eye, Check, X, User } from "lucide-react";
+import { ShieldAlert, Lock, Eye, Check, X } from "lucide-react";
 import { useFirestore, useCollection, useUser } from "@/firebase";
 import { collection, query, where, updateDoc, doc, getDoc, setDoc, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -20,9 +20,9 @@ export default function AdminPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // Simulé pour MVP : Seuls certains emails sont admins
+  // Seuls certains emails sont admins pour la démo
   const isAdmin = useMemo(() => {
-    return user?.email === "admin@spamlist.fr" || user?.email?.includes("owner");
+    return user?.email === "admin@spamlist.fr" || user?.email?.includes("owner") || user?.email === "votre-email@gmail.com";
   }, [user]);
 
   const pendingRecordsQuery = useMemo(() => {
@@ -46,7 +46,7 @@ export default function AdminPage() {
 
     try {
       // 1. Approuver le record
-      await updateDoc(recordRef, { status: "approved", pointsEarned: 100 }); // Points à ajuster selon difficulté
+      await updateDoc(recordRef, { status: "approved", pointsEarned: 100 });
 
       // 2. Mettre à jour les stats du joueur
       const userSnap = await getDoc(userRef);
@@ -64,7 +64,8 @@ export default function AdminPage() {
           tier: "Bronze",
           trustScore: 60,
           platform: record.platform,
-          bestSpamType: record.spamType
+          bestSpamType: record.spamType,
+          progression: [{ date: Date.now(), points: 100 }]
         });
       }
 
@@ -96,15 +97,13 @@ export default function AdminPage() {
     <div className="flex min-h-screen flex-col">
       <Navigation />
       <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-12">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary/10 text-primary rounded-xl gold-border">
-              <ShieldAlert className="h-8 w-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-black gold-text uppercase">Quartier Général</h1>
-              <p className="text-muted-foreground italic">"La confiance est le pilier de l'élite."</p>
-            </div>
+        <div className="flex items-center gap-4 mb-12">
+          <div className="p-3 bg-primary/10 text-primary rounded-xl gold-border">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-black gold-text uppercase">Quartier Général</h1>
+            <p className="text-muted-foreground italic">"La confiance est le pilier de l'élite."</p>
           </div>
         </div>
 
@@ -144,9 +143,6 @@ export default function AdminPage() {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {records?.length === 0 && (
-                       <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Aucun record en attente.</TableCell></TableRow>
-                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -177,9 +173,6 @@ export default function AdminPage() {
                         </TableCell>
                       </TableRow>
                     ))}
-                     {levels?.length === 0 && (
-                       <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Aucune proposition en attente.</TableCell></TableRow>
-                    )}
                   </TableBody>
                 </Table>
               </CardContent>

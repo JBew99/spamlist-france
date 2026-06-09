@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutList, PlusCircle, ShieldCheck, Home, Trophy, Users, Package, History, Swords, LogIn, User, LogOut } from "lucide-react";
+import { LayoutList, PlusCircle, Home, Trophy, Users, Package, LogIn, User, LogOut, Swords } from "lucide-react";
 import { useUser, useAuth } from "@/firebase";
 import { Button } from "./ui/button";
 import { signOut } from "firebase/auth";
