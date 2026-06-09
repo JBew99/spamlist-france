@@ -35,8 +35,8 @@ export interface Record {
 }
 
 export interface Level {
-  id: string; // ID stable interne (ex: lvl-1)
-  levelId: string; // ID Ingame Geometry Dash
+  id: string;
+  levelId: string;
   name: string;
   creator: string;
   difficulty: number;
@@ -57,12 +57,12 @@ export interface PlayerStats {
   name: string;
   points: number;
   completions: number;
-  rank: number; // Position globale
-  tier: UserRank; // Rang visuel
+  rank: number;
+  tier: UserRank;
   bestSpamType: SpamType;
   platform: Platform;
   clanId?: string;
-  trustScore: number; // 0-100 (Score de confiance invisible pour les admins)
+  trustScore: number; // 0-100
   history: ActivityItem[];
 }
 
@@ -89,7 +89,7 @@ export interface Clan {
 export interface LevelPack {
   id: string;
   name: string;
-  levels: string[]; // IDs des niveaux (lvl-X)
+  levels: string[];
   rewardPoints: number;
   description: string;
 }
