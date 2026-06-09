@@ -1,0 +1,16 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Electronic neon gaming background",
+      "imageUrl": "https://picsum.photos/seed/spamlist-hero/1920/1080",
+      "imageHint": "neon gaming"
+    },
+    {
+      "id": "level-card-default",
+      "description": "Geometry Dash level thumbnail placeholder",
+      "imageUrl": "https://picsum.photos/seed/gd-level/600/400",
+      "imageHint": "abstract neon"
+    }
+  ]
+}
