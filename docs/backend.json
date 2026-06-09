@@ -9,8 +9,8 @@
         "levelId": { "type": "string", "description": "ID Geometry Dash" },
         "name": { "type": "string" },
         "creator": { "type": "string" },
-        "difficulty": { "type": "number", "description": "Points accordés pour la complétion" },
-        "completionPercent": { "type": "number", "description": "Pourcentage requis pour la liste" },
+        "difficulty": { "type": "number" },
+        "completionPercent": { "type": "number" },
         "videoProof": { "type": "string", "format": "url" },
         "description": { "type": "string" },
         "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
@@ -51,31 +51,26 @@
         "tier": { "type": "string", "enum": ["Bronze", "Argent", "Or", "Platine", "Diamant", "Élite"] },
         "bestSpamType": { "type": "string" },
         "platform": { "type": "string" },
-        "clanId": { "type": "string" },
-        "trustScore": { "type": "number" }
-      }
-    },
-    "Clan": {
-      "title": "Clan / Alliance",
-      "description": "Une équipe de joueurs.",
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "tag": { "type": "string" },
-        "points": { "type": "number" },
-        "description": { "type": "string" },
-        "ownerId": { "type": "string" },
-        "membersCount": { "type": "number" }
+        "trustScore": { "type": "number" },
+        "progression": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "number" },
+              "points": { "type": "number" }
+            }
+          }
+        }
       }
     }
   },
   "auth": {
-    "providers": ["google.com"]
+    "providers": ["google.com", "twitter.com", "password"]
   },
   "firestore": {
     "/levels/{levelId}": { "schema": "Level", "description": "Niveaux de la liste" },
     "/records/{recordId}": { "schema": "Record", "description": "Soumissions de records" },
-    "/users/{userId}": { "schema": "PlayerStats", "description": "Profils utilisateurs" },
-    "/clans/{clanId}": { "schema": "Clan", "description": "Clans de joueurs" }
+    "/users/{userId}": { "schema": "PlayerStats", "description": "Profils utilisateurs" }
   }
 }

@@ -4,7 +4,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutList, PlusCircle, ShieldCheck, Home, Trophy, Users, Package, History, Swords } from "lucide-react";
+import { LayoutList, PlusCircle, ShieldCheck, Home, Trophy, Users, Package, History, Swords, LogIn, User, LogOut } from "lucide-react";
+import { useUser, useAuth } from "@/firebase";
+import { Button } from "./ui/button";
+import { signOut } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { name: "Accueil", href: "/", icon: Home },
@@ -13,12 +17,19 @@ const navItems = [
   { name: "Clans", href: "/clans", icon: Users },
   { name: "Packs", href: "/packs", icon: Package },
   { name: "Soumettre", href: "/soumettre", icon: PlusCircle },
-  { name: "Changelog", href: "/changelog", icon: History },
-  { name: "Admin", href: "/admin", icon: ShieldCheck },
 ];
 
 export function Navigation() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const auth = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    toast({ title: "Déconnexion", description: "Vous avez été déconnecté avec succès." });
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-primary/10 bg-background/80 backdrop-blur-xl transition-all duration-300">
@@ -33,12 +44,12 @@ export function Navigation() {
             </span>
           </Link>
         </div>
-        <div className="hidden lg:flex lg:items-center lg:space-x-8">
+        
+        <div className="hidden lg:flex lg:items-center lg:space-x-6">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              prefetch={true}
               className={cn(
                 "relative flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all hover:text-primary whitespace-nowrap px-1 py-2 group",
                 pathname === item.href ? "text-primary" : "text-muted-foreground"
@@ -52,9 +63,26 @@ export function Navigation() {
             </Link>
           ))}
         </div>
-        <div className="lg:hidden flex items-center space-x-6">
-          <Link href="/list" className="text-primary active:scale-90 transition-transform"><LayoutList className="h-6 w-6" /></Link>
-          <Link href="/soumettre" className="text-secondary active:scale-90 transition-transform"><PlusCircle className="h-6 w-6" /></Link>
+
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <Link href={`/profil/${user.uid}`}>
+                <Button variant="ghost" className="gap-2 silver-text hover:gold-text font-black uppercase text-[10px] tracking-widest">
+                  <User className="h-4 w-4" /> Profil
+                </Button>
+              </Link>
+              <Button onClick={handleLogout} variant="outline" size="icon" className="gold-border border-destructive/30 text-destructive hover:bg-destructive/10">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Link href="/connexion">
+              <Button className="bg-primary text-black font-black uppercase text-[10px] tracking-widest px-6 h-10 rounded-xl">
+                <LogIn className="h-4 w-4 mr-2" /> Connexion
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>
