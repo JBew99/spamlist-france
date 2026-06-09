@@ -175,14 +175,10 @@ export default function ConnexionPage() {
                     <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                     <div className="relative flex justify-center text-[10px] uppercase font-black text-muted-foreground"><span className="bg-card/50 px-2">Ou continuer avec</span></div>
                   </div>
-<<<<<<< HEAD
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><Chrome className="h-4 w-4" /> Google</Button>
                     <Button variant="outline" onClick={() => handleProviderLogin(new TwitterAuthProvider())} className="gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><XLogo /> X (Twitter)</Button>
                   </div>
-=======
-                  <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="w-full gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><Chrome className="h-4 w-4" /> Continuer avec Google</Button>
->>>>>>> 8e0315c81e568e4ff3783c69dc7b56734af3d9e3
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -214,14 +210,10 @@ export default function ConnexionPage() {
                     <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                     <div className="relative flex justify-center text-[10px] uppercase font-black text-muted-foreground"><span className="bg-card/50 px-2">Ou s'inscrire via</span></div>
                   </div>
-<<<<<<< HEAD
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="gold-border h-12 gap-2"><Chrome className="h-4 w-4" /> Google</Button>
                     <Button variant="outline" onClick={() => handleProviderLogin(new TwitterAuthProvider())} className="gold-border h-12 gap-2"><XLogo /> X (Twitter)</Button>
                   </div>
-=======
-                  <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="w-full gold-border h-12 gap-2"><Chrome className="h-4 w-4" /> Continuer avec Google</Button>
->>>>>>> 8e0315c81e568e4ff3783c69dc7b56734af3d9e3
                 </CardFooter>
               </Card>
             </TabsContent>
