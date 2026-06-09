@@ -41,6 +41,10 @@ export default function Home() {
               fill
               className="object-cover"
               priority
+              quality={60}
+              sizes="100vw"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%23111111'/%3E%3C/svg%3E"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />

@@ -14,16 +14,17 @@ import { collection, query, where, updateDoc, doc, getDoc, setDoc, increment } f
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { isAdminUser } from "@/lib/admin-utils";
 
 export default function AdminPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // Seuls certains emails sont admins pour la démo
+  // ✅ FIXED: Use exact email matching, no .includes()
   const isAdmin = useMemo(() => {
-    return user?.email === "admin@spamlist.fr" || user?.email?.includes("owner") || user?.email === "votre-email@gmail.com";
-  }, [user]);
+    return user?.email ? isAdminUser(user.email) : false;
+  }, [user?.email]);
 
   const pendingRecordsQuery = useMemo(() => {
     if (!firestore) return null;
