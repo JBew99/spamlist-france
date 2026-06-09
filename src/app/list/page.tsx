@@ -6,98 +6,121 @@ import { MOCK_LEVELS } from "@/app/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Play, Star, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Filter, Play, Star, ChevronRight, Monitor, Smartphone, Zap } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function ListPage() {
   const [search, setSearch] = useState("");
-  
-  const filteredLevels = MOCK_LEVELS.filter(level => 
-    level.name.toLowerCase().includes(search.toLowerCase()) ||
-    level.creator.toLowerCase().includes(search.toLowerCase()) ||
-    level.levelId.includes(search)
-  ).sort((a, b) => b.difficulty - a.difficulty);
+  const [platform, setPlatform] = useState<string>("all");
+  const [fps, setFps] = useState<string>("all");
+  const [spamType, setSpamType] = useState<string>("all");
+
+  const filteredLevels = MOCK_LEVELS.filter(level => {
+    const matchesSearch = level.name.toLowerCase().includes(search.toLowerCase()) ||
+                          level.creator.toLowerCase().includes(search.toLowerCase()) ||
+                          level.levelId.includes(search);
+    const matchesFps = fps === "all" || level.minFps >= parseInt(fps);
+    const matchesSpamType = spamType === "all" || level.spamType === spamType;
+    
+    return matchesSearch && matchesFps && matchesSpamType;
+  }).sort((a, b) => b.difficulty - a.difficulty);
 
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
           <div>
-            <h1 className="text-4xl font-bold text-primary mb-2 neon-text">La Spam List</h1>
-            <p className="text-muted-foreground">Classement officiel des défis de spam en France.</p>
+            <h1 className="text-4xl font-black text-primary mb-2 gold-text">Archives de la Liste</h1>
+            <p className="text-muted-foreground">Classement technique de l'élite française.</p>
           </div>
-          <div className="flex items-center gap-2 w-full md:w-auto max-w-md">
-            <div className="relative w-full">
+          
+          <div className="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto">
+            <div className="relative col-span-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Rechercher par ID, Nom ou Créateur..." 
-                className="pl-10 border-primary/20 bg-card focus-visible:ring-primary"
+                placeholder="Rechercher..." 
+                className="pl-10 gold-border bg-card"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon" className="border-primary/20">
-              <Filter className="h-4 w-4" />
-            </Button>
+            
+            <Select onValueChange={setFps} defaultValue="all">
+              <SelectTrigger className="w-full md:w-[120px] gold-border bg-card">
+                <SelectValue placeholder="FPS" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous FPS</SelectItem>
+                <SelectItem value="60">60+</SelectItem>
+                <SelectItem value="144">144+</SelectItem>
+                <SelectItem value="240">240+</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select onValueChange={setSpamType} defaultValue="all">
+              <SelectTrigger className="w-full md:w-[160px] gold-border bg-card">
+                <SelectValue placeholder="Style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous Styles</SelectItem>
+                <SelectItem value="Butterfly">Butterfly</SelectItem>
+                <SelectItem value="Jitter">Jitter</SelectItem>
+                <SelectItem value="Alternating">Alternating</SelectItem>
+                <SelectItem value="Rake">Rake</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <div className="grid gap-4">
           {filteredLevels.map((level, index) => (
             <Link key={level.id} href={`/level/${level.id}`}>
-              <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-[0_0_20px_rgba(255,77,222,0.15)]">
+              <div className="group relative overflow-hidden rounded-xl border border-border bg-card/50 p-5 transition-all hover:gold-border hover:shadow-[0_0_20px_rgba(250,204,21,0.1)]">
                 <div className="flex items-center gap-6">
-                  {/* Rank */}
                   <div className="flex-shrink-0 w-12 text-center">
-                    <span className="text-3xl font-black text-muted-foreground/30 group-hover:text-primary transition-colors">#{index + 1}</span>
+                    <span className="text-4xl font-black text-muted-foreground/20 group-hover:gold-text transition-colors">#{index + 1}</span>
                   </div>
 
-                  {/* Image/Thumbnail */}
-                  <div className="hidden sm:block relative h-20 w-36 rounded-lg overflow-hidden flex-shrink-0 border border-border">
+                  <div className="hidden sm:block relative h-24 w-44 rounded-xl overflow-hidden flex-shrink-0 border border-border">
                     <Image 
-                      src={`https://picsum.photos/seed/list-${level.id}/200/120`} 
+                      src={`https://picsum.photos/seed/list-${level.id}/400/240`} 
                       alt={level.name} 
                       fill 
-                      className="object-cover grayscale group-hover:grayscale-0 transition-all"
+                      className="object-cover transition-all group-hover:scale-110"
                     />
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-xl font-bold truncate">{level.name}</h3>
-                      <Badge variant="secondary" className="bg-secondary/10 text-secondary border-none">{level.difficulty} pts</Badge>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-2xl font-black silver-text truncate">{level.name}</h3>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">{level.difficulty} PTS</Badge>
+                      <Badge variant="outline" className="text-[10px] uppercase">{level.spamType}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">par <span className="text-foreground font-medium">{level.creator}</span> • ID: {level.levelId}</p>
-                    <div className="flex items-center gap-4">
+                    <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
+                      par <span className="text-foreground font-bold silver-text">{level.creator}</span> • {level.minFps}FPS Requis
+                    </p>
+                    <div className="flex items-center gap-6">
                       <div className="flex items-center text-xs text-muted-foreground">
-                        <Star className="h-3 w-3 mr-1 text-yellow-500 fill-yellow-500" />
-                        {level.averageRating}% Enjoyment
+                        <Monitor className="h-3.5 w-3.5 mr-1 text-primary" /> PC / Mobile
                       </div>
                       <div className="flex items-center text-xs text-muted-foreground">
-                        <Play className="h-3 w-3 mr-1 text-primary" />
-                        List%: {level.completionPercent}%
+                        <Zap className="h-3.5 w-3.5 mr-1 text-primary" /> {level.completionPercent}% List
                       </div>
                     </div>
                   </div>
 
-                  {/* Action */}
                   <div className="flex-shrink-0">
-                    <Button variant="ghost" size="icon" className="group-hover:text-primary transition-colors">
-                      <ChevronRight className="h-6 w-6" />
+                    <Button variant="ghost" size="icon" className="group-hover:text-primary">
+                      <ChevronRight className="h-8 w-8" />
                     </Button>
                   </div>
                 </div>
               </div>
             </Link>
           ))}
-          {filteredLevels.length === 0 && (
-            <div className="text-center py-20 border-2 border-dashed border-border rounded-xl">
-              <p className="text-muted-foreground">Aucun niveau trouvé pour votre recherche.</p>
-            </div>
-          )}
         </div>
       </main>
     </div>

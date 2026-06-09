@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutList, PlusCircle, ShieldCheck, Home, Trophy, Swords } from "lucide-react";
+import { LayoutList, PlusCircle, ShieldCheck, Home, Trophy, Users, Package, History, Swords } from "lucide-react";
 
 const navItems = [
   { name: "Accueil", href: "/", icon: Home },
   { name: "La Liste", href: "/list", icon: LayoutList },
-  { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
-  { name: "Submit", href: "/submit", icon: PlusCircle },
+  { name: "Classement", href: "/classement", icon: Trophy },
+  { name: "Clans", href: "/clans", icon: Users },
+  { name: "Packs", href: "/packs", icon: Package },
+  { name: "Soumettre", href: "/soumettre", icon: PlusCircle },
+  { name: "Changelog", href: "/changelog", icon: History },
   { name: "Admin", href: "/admin", icon: ShieldCheck },
 ];
 
@@ -29,24 +32,24 @@ export function Navigation() {
             </span>
           </Link>
         </div>
-        <div className="hidden md:flex md:items-center md:space-x-8">
+        <div className="hidden lg:flex lg:items-center lg:space-x-6">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-all hover:text-primary",
+                "flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all hover:text-primary whitespace-nowrap",
                 pathname === item.href ? "text-primary border-b-2 border-primary pb-1" : "text-muted-foreground"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-3 w-3" />
               {item.name}
             </Link>
           ))}
         </div>
-        <div className="md:hidden flex items-center space-x-6">
+        <div className="lg:hidden flex items-center space-x-6">
           <Link href="/list" className="text-primary"><LayoutList className="h-6 w-6" /></Link>
-          <Link href="/submit" className="text-secondary"><PlusCircle className="h-6 w-6" /></Link>
+          <Link href="/soumettre" className="text-secondary"><PlusCircle className="h-6 w-6" /></Link>
         </div>
       </div>
     </nav>

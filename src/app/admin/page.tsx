@@ -1,35 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Eye, ShieldAlert, Zap, Trophy, BrainCircuit } from "lucide-react";
+import { Check, X, Eye, ShieldAlert, Zap, Trophy, BrainCircuit, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const MOCK_SUBMISSIONS = [
-  { id: "s1", type: 'new_level', levelId: "99887766", name: "Fast Finger Test", creator: "ClickGod", timestamp: Date.now() - 100000 },
-  { id: "r1", type: 'completion', levelId: "12345678", levelName: "Ultra Spam v2", playerName: "DarkClipper", videoUrl: "https://yt.com", timestamp: Date.now() - 500000 },
-];
+import Link from "next/link";
 
 export default function AdminPage() {
   const { toast } = useToast();
-  const [subs, setSubs] = useState(MOCK_SUBMISSIONS);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Simulation d'accès admin (le proprio)
+  useEffect(() => {
+    // Dans une vraie app, on checkerait les claims Firebase Auth ici
+    const checkAccess = () => {
+      const isOwner = true; // Simulé
+      setIsAdmin(isOwner);
+    };
+    checkAccess();
+  }, []);
 
-  const handleAction = (id: string, action: 'approve' | 'reject') => {
-    setSubs(prev => prev.filter(s => s.id !== id));
-    toast({
-      title: action === 'approve' ? "Accepté" : "Refusé",
-      description: `L'action a été synchronisée avec la base de données.`,
-    });
-  };
-
-  const levels = subs.filter(s => s.type === 'new_level');
-  const records = subs.filter(s => s.type === 'completion');
+  if (!isAdmin) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+        <Lock className="h-20 w-20 text-destructive mb-6" />
+        <h1 className="text-4xl font-black gold-text mb-4 uppercase">Accès Restreint</h1>
+        <p className="text-muted-foreground max-w-md">Seuls les administrateurs et le propriétaire peuvent accéder au Quartier Général.</p>
+        <Link href="/"><Button className="mt-8 gold-border" variant="outline">Retour à l'accueil</Button></Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -46,79 +51,28 @@ export default function AdminPage() {
             </div>
           </div>
           <Button variant="outline" className="gold-border text-primary hover:bg-primary/10 gap-2">
-            <BrainCircuit className="h-4 w-4" /> Analyseur IA Auto
+            <BrainCircuit className="h-4 w-4" /> Analyseur IA Pulse (Bêta)
           </Button>
         </div>
 
         <Tabs defaultValue="levels" className="w-full">
           <TabsList className="bg-muted/50 gold-border p-1 h-12 mb-8">
-            <TabsTrigger value="levels" className="gap-2">Niveaux <Badge variant="secondary" className="ml-1">{levels.length}</Badge></TabsTrigger>
-            <TabsTrigger value="records" className="gap-2">Records <Badge variant="secondary" className="ml-1">{records.length}</Badge></TabsTrigger>
+            <TabsTrigger value="levels" className="gap-2">Nouveaux Niveaux</TabsTrigger>
+            <TabsTrigger value="records" className="gap-2">Nouveaux Records</TabsTrigger>
           </TabsList>
 
           <TabsContent value="levels">
-            <Card className="border-border shadow-2xl">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent border-border">
-                      <TableHead>Niveau</TableHead>
-                      <TableHead>Créateur</TableHead>
-                      <TableHead>ID</TableHead>
-                      <TableHead className="text-right">Décision</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {levels.map((sub) => (
-                      <TableRow key={sub.id} className="border-border">
-                        <TableCell className="font-bold silver-text">{sub.name}</TableCell>
-                        <TableCell>{sub.creator}</TableCell>
-                        <TableCell className="font-mono text-xs">{sub.levelId}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-primary"><Eye /></Button>
-                            <Button onClick={() => handleAction(sub.id, 'approve')} size="icon" className="bg-green-600 h-8 w-8"><Check /></Button>
-                            <Button onClick={() => handleAction(sub.id, 'reject')} size="icon" className="bg-destructive h-8 w-8"><X /></Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {levels.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-20 text-muted-foreground">Calme plat sur les nouveaux niveaux.</TableCell></TableRow>}
-                  </TableBody>
-                </Table>
+            <Card className="border-border shadow-2xl bg-card/50">
+              <CardContent className="p-0 text-center py-20 italic text-muted-foreground">
+                Aucune proposition de niveau en attente.
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="records">
-            <Card className="border-border shadow-2xl">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent border-border">
-                      <TableHead>Joueur</TableHead>
-                      <TableHead>Challenge</TableHead>
-                      <TableHead>Lien</TableHead>
-                      <TableHead className="text-right">Décision</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {records.map((sub: any) => (
-                      <TableRow key={sub.id} className="border-border">
-                        <TableCell className="font-bold gold-text">{sub.playerName}</TableCell>
-                        <TableCell>{sub.levelName}</TableCell>
-                        <TableCell><a href={sub.videoUrl} target="_blank" className="text-blue-400 underline text-xs">Preuve</a></TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button onClick={() => handleAction(sub.id, 'approve')} size="icon" className="bg-primary text-black h-8 w-8"><Check /></Button>
-                            <Button onClick={() => handleAction(sub.id, 'reject')} size="icon" className="bg-destructive h-8 w-8"><X /></Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {records.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-20 text-muted-foreground">Aucun exploit en attente de validation.</TableCell></TableRow>}
-                  </TableBody>
-                </Table>
+            <Card className="border-border shadow-2xl bg-card/50">
+              <CardContent className="p-0 text-center py-20 italic text-muted-foreground">
+                Tous les records ont été vérifiés par l'équipe Pulse AI.
               </CardContent>
             </Card>
           </TabsContent>

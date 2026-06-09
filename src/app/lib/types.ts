@@ -1,8 +1,10 @@
 export type LevelStatus = 'pending' | 'approved' | 'rejected';
+export type Platform = 'PC' | 'Mobile';
+export type SpamType = 'Alternating' | 'Alt-Jitter' | 'Jitter' | 'Button Mashing' | 'Rake' | 'Lip Spam' | 'Butterfly' | 'Telekinesis' | 'Scroll Clicking';
 
 export interface LevelRating {
   id: string;
-  rating: number; // 0-100
+  rating: number;
   comment: string;
   timestamp: number;
 }
@@ -13,44 +15,61 @@ export interface Record {
   videoUrl: string;
   timestamp: number;
   status: LevelStatus;
+  fps: number;
+  platform: Platform;
+  spamType: SpamType;
 }
 
 export interface Level {
-  id: string; // Internal unique ID
-  levelId: string; // Geometry Dash ID
+  id: string;
+  levelId: string;
   name: string;
   creator: string;
-  difficulty: number; // Points or relative difficulty
-  completionPercent: number; // list%
+  difficulty: number;
+  completionPercent: number;
   videoProof: string;
   description: string;
   averageRating: number;
   ratings: LevelRating[];
   records: Record[];
   status: LevelStatus;
+  minFps: number;
+  verifier: string;
+  spamType: SpamType;
 }
 
-export interface LevelSubmission {
+export interface PlayerStats {
   id: string;
-  type: 'new_level';
-  levelId: string;
   name: string;
-  creator: string;
-  videoProof: string;
-  description: string;
-  status: LevelStatus;
-  timestamp: number;
+  points: number;
+  completions: number;
+  rank: number;
+  bestSpamType: SpamType;
+  platform: Platform;
+  clanId?: string;
 }
 
-export interface RecordSubmission {
+export interface Clan {
   id: string;
-  type: 'completion';
-  levelId: string; // Geometry Dash ID or Internal ID
-  levelName: string;
-  playerName: string;
-  videoUrl: string;
-  status: LevelStatus;
-  timestamp: number;
+  name: string;
+  tag: string;
+  points: number;
+  members: number;
+  description: string;
+  rank: number;
 }
 
-export type Submission = LevelSubmission | RecordSubmission;
+export interface LevelPack {
+  id: string;
+  name: string;
+  levels: string[]; // IDs des niveaux
+  rewardPoints: number;
+  description: string;
+}
+
+export interface ChangelogEntry {
+  id: string;
+  date: number;
+  title: string;
+  changes: string[];
+}

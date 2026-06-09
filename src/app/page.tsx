@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Trophy, Zap, Users, Star, ShieldCheck, Swords } from "lucide-react";
+import { Trophy, Zap, Users, ShieldCheck, Swords, Search, BrainCircuit, History, Package, Activity, Mic2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
               fill
               className="object-cover"
               priority
-              data-ai-hint="neon gaming"
+              data-ai-hint="dark gaming"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
@@ -29,26 +29,26 @@ export default function Home() {
           <div className="container px-6 mx-auto relative z-10">
             <div className="flex flex-col items-center space-y-8 text-center">
               <div className="space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
-                <Badge className="bg-primary/20 text-primary border-primary/30 px-6 py-2 rounded-full uppercase tracking-widest font-black text-xs">
-                  La Référence Française du Spam
-                </Badge>
-                <h1 className="text-6xl font-black tracking-tighter sm:text-7xl md:text-8xl lg:text-9xl gold-text">
-                  L'ÉLITE DU <br/><span className="silver-text">PRECISION SPAM</span>
+                <div className="inline-flex items-center px-6 py-2 rounded-full bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest font-black text-[10px]">
+                  Système de Prestige Elite 2.0
+                </div>
+                <h1 className="text-6xl font-black tracking-tighter sm:text-7xl md:text-8xl lg:text-9xl gold-text uppercase">
+                  L'ÉLITE DU <br/><span className="silver-text">SPAM FRANÇAIS</span>
                 </h1>
                 <p className="mx-auto max-w-[800px] text-muted-foreground md:text-2xl font-light leading-relaxed">
-                  Le classement ultime des défis les plus brutaux de France. <br className="hidden md:block"/>
-                  Prouvez votre valeur, entrez dans la légende.
+                  Le sanctuaire des défis les plus brutaux de Geometry Dash. <br className="hidden md:block"/>
+                  Rejoignez la légende, dominez la liste, forgez votre prestige.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
                 <Link href="/list">
                   <Button size="lg" className="bg-primary hover:bg-primary/90 text-black px-12 h-16 text-xl font-black rounded-2xl shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
-                    Entrer dans l'Arène <ArrowRight className="ml-2 h-6 w-6" />
+                    Consulter la Liste <Search className="ml-2 h-6 w-6" />
                   </Button>
                 </Link>
-                <Link href="/submit">
+                <Link href="/soumettre">
                   <Button size="lg" variant="outline" className="gold-border text-primary hover:bg-primary/10 px-12 h-16 text-xl font-bold rounded-2xl backdrop-blur-md">
-                    Déposer une Preuve
+                    Soumettre un exploit
                   </Button>
                 </Link>
               </div>
@@ -56,14 +56,31 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="w-full py-20 bg-background/50 border-y border-white/5">
+        {/* AI Innovations Section */}
+        <section className="w-full py-20 bg-primary/5 border-y border-primary/10 overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-shine" />
           <div className="container px-6 mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-              <div><p className="text-5xl font-black gold-text mb-2">124</p><p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Niveaux Classés</p></div>
-              <div><p className="text-5xl font-black silver-text mb-2">1.2k</p><p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Records Validés</p></div>
-              <div><p className="text-5xl font-black gold-text mb-2">45k</p><p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Points Distribués</p></div>
-              <div><p className="text-5xl font-black silver-text mb-2">100%</p><p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Vérifié par l'Elite</p></div>
+            <div className="flex items-center gap-4 mb-12 justify-center md:justify-start">
+              <BrainCircuit className="h-10 w-10 text-primary animate-pulse" />
+              <h2 className="text-3xl font-black silver-text uppercase tracking-tighter">Technologies Pulse AI</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { title: "SpamStyle Optimizer", desc: "Analyse votre rythme pour suggérer la meilleure technique (Jitter, Butterfly, etc.).", icon: Zap },
+                { title: "Pulse Moderator", desc: "Anti-macro par analyse rythmique millimétrée.", icon: ShieldCheck },
+                { title: "Skill Evolution AI", desc: "Prédit la difficulté future selon l'évolution du niveau mondial.", icon: History },
+                { title: "Synergy Clan Optimizer", desc: "Calcule les meilleures alliances entre joueurs pour les guerres de clans.", icon: Users },
+                { title: "Neuro-Trainer", desc: "Suggère des exercices de spam personnalisés pour booster votre CPS.", icon: Activity },
+                { title: "Echo-Verify", desc: "Système de double vérification acoustique pour garantir l'authenticité.", icon: Mic2 },
+                { title: "Smart Challenges", desc: "Génération dynamique de défis hebdomadaires sur-mesure.", icon: Package },
+                { title: "Prestige Analyzer", desc: "Évalue la valeur réelle d'un record selon les FPS et la plateforme.", icon: Trophy },
+              ].map((ai, i) => (
+                <div key={i} className="p-6 bg-card/40 gold-border rounded-2xl backdrop-blur group hover:bg-primary/10 transition-colors border border-white/5">
+                  <ai.icon className="h-8 w-8 text-primary mb-4 group-hover:scale-125 transition-transform" />
+                  <h4 className="font-bold silver-text mb-2">{ai.title}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{ai.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -115,8 +132,4 @@ export default function Home() {
       </footer>
     </div>
   );
-}
-
-function Badge({ className, children }: { className?: string, children: React.ReactNode }) {
-  return <div className={cn("inline-flex items-center px-2.5 py-0.5 text-xs font-semibold transition-colors", className)}>{children}</div>
 }
