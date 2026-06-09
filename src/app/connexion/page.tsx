@@ -12,7 +12,6 @@ import { useAuth, useFirestore } from "@/firebase";
 import { 
   signInWithPopup, 
   GoogleAuthProvider, 
-  TwitterAuthProvider, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   sendPasswordResetEmail
@@ -21,12 +20,6 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn, UserPlus, Chrome, ShieldCheck, Loader2 } from "lucide-react";
-
-const XLogo = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-);
 
 export default function ConnexionPage() {
   const [email, setEmail] = useState("");
@@ -41,7 +34,10 @@ export default function ConnexionPage() {
   const { toast } = useToast();
 
   const handleProviderLogin = async (provider: any) => {
-    if (!auth || !firestore) return;
+    if (!auth || !firestore) {
+      toast({ variant: "destructive", title: "Erreur de configuration", description: "Firebase n'est pas initialisé. Vérifiez les clés de configuration." });
+      return;
+    }
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
@@ -65,7 +61,31 @@ export default function ConnexionPage() {
       toast({ title: "Accès autorisé", description: `Bienvenue dans l'Elite, ${user.displayName || 'Spammeur'} !` });
       router.push("/");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erreur d'accès", description: "La connexion a échoué." });
+      console.log("[v0] Provider login error:", error?.code, error?.message);
+      let description = "La connexion a échoué.";
+      switch (error?.code) {
+        case "auth/operation-not-allowed":
+          description = "Ce fournisseur n'est pas activé. Activez Google/Twitter dans Firebase Console > Authentication > Sign-in method.";
+          break;
+        case "auth/unauthorized-domain":
+          description = "Domaine non autorisé. Ajoutez ce domaine dans Firebase Console > Authentication > Settings > Authorized domains.";
+          break;
+        case "auth/popup-blocked":
+          description = "La popup a été bloquée par le navigateur. Autorisez les popups pour ce site.";
+          break;
+        case "auth/popup-closed-by-user":
+          description = "Fenêtre de connexion fermée avant la fin.";
+          break;
+        case "auth/configuration-not-found":
+          description = "Configuration Firebase introuvable. Vérifiez vos clés d'API.";
+          break;
+        case "auth/invalid-api-key":
+          description = "Clé API Firebase invalide. Vérifiez vos variables d'environnement.";
+          break;
+        default:
+          description = error?.message || "La connexion a échoué.";
+      }
+      toast({ variant: "destructive", title: "Erreur d'accès", description });
     } finally {
       setLoading(false);
     }
@@ -182,10 +202,7 @@ export default function ConnexionPage() {
                     <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                     <div className="relative flex justify-center text-[10px] uppercase font-black text-muted-foreground"><span className="bg-card/50 px-2">Ou continuer avec</span></div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 w-full">
-                    <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><Chrome className="h-4 w-4" /> Google</Button>
-                    <Button variant="outline" onClick={() => handleProviderLogin(new TwitterAuthProvider())} className="gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><XLogo /> X (Twitter)</Button>
-                  </div>
+                  <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="w-full gold-border h-12 gap-2 hover:bg-primary/5 transition-colors"><Chrome className="h-4 w-4" /> Continuer avec Google</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -217,10 +234,7 @@ export default function ConnexionPage() {
                     <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
                     <div className="relative flex justify-center text-[10px] uppercase font-black text-muted-foreground"><span className="bg-card/50 px-2">Ou s'inscrire via</span></div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 w-full">
-                    <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="gold-border h-12 gap-2"><Chrome className="h-4 w-4" /> Google</Button>
-                    <Button variant="outline" onClick={() => handleProviderLogin(new TwitterAuthProvider())} className="gold-border h-12 gap-2"><XLogo /> X (Twitter)</Button>
-                  </div>
+                  <Button variant="outline" onClick={() => handleProviderLogin(new GoogleAuthProvider())} className="w-full gold-border h-12 gap-2"><Chrome className="h-4 w-4" /> Continuer avec Google</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
