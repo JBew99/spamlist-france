@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,59 +9,62 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
-import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Send, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Send, CheckCircle2, Trophy, PlusCircle } from "lucide-react";
 
-const submissionSchema = z.object({
-  levelId: z.string().min(6, "ID de niveau invalide"),
+const levelSchema = z.object({
+  levelId: z.string().min(6, "ID invalide"),
   name: z.string().min(2, "Nom trop court"),
-  creator: z.string().min(2, "Nom du créateur requis"),
-  completionPercent: z.coerce.number().min(1).max(100),
-  videoProof: z.string().url("Veuillez entrer un lien vidéo valide (YouTube/Twitch)"),
-  description: z.string().max(500, "Description trop longue"),
-  enjoyment: z.number().min(0).max(100),
+  creator: z.string().min(2, "Créateur requis"),
+  videoProof: z.string().url("URL invalide"),
+  description: z.string().max(500),
+});
+
+const recordSchema = z.object({
+  levelId: z.string().min(6, "ID du niveau requis"),
+  playerName: z.string().min(2, "Votre pseudo"),
+  videoUrl: z.string().url("Lien vidéo de votre exploit"),
 });
 
 export default function SubmitPage() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  const form = useForm<z.infer<typeof submissionSchema>>({
-    resolver: zodResolver(submissionSchema),
-    defaultValues: {
-      levelId: "",
-      name: "",
-      creator: "",
-      completionPercent: 0,
-      videoProof: "",
-      description: "",
-      enjoyment: 50,
-    },
+
+  const levelForm = useForm<z.infer<typeof levelSchema>>({
+    resolver: zodResolver(levelSchema),
+    defaultValues: { levelId: "", name: "", creator: "", videoProof: "", description: "" },
   });
 
-  function onSubmit(values: z.infer<typeof submissionSchema>) {
-    console.log(values);
+  const recordForm = useForm<z.infer<typeof recordSchema>>({
+    resolver: zodResolver(recordSchema),
+    defaultValues: { levelId: "", playerName: "", videoUrl: "" },
+  });
+
+  const onLevelSubmit = (values: any) => {
+    console.log("Level Submission:", values);
     setIsSubmitted(true);
-    toast({
-      title: "Soumission réussie !",
-      description: "Votre niveau a été envoyé pour révision par les administrateurs.",
-    });
-  }
+    toast({ title: "Niveau envoyé !", description: "Les modérateurs vont l'étudier." });
+  };
+
+  const onRecordSubmit = (values: any) => {
+    console.log("Record Submission:", values);
+    setIsSubmitted(true);
+    toast({ title: "Record envoyé !", description: "Votre complétion est en cours de vérification." });
+  };
 
   if (isSubmitted) {
     return (
       <div className="flex min-h-screen flex-col">
         <Navigation />
         <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full text-center border-primary shadow-lg animate-in fade-in slide-in-from-bottom-4">
+          <Card className="max-w-md w-full text-center border-primary/50 shadow-2xl bg-card">
             <CardContent className="pt-10 pb-10 flex flex-col items-center">
-              <CheckCircle2 className="h-16 w-16 text-primary mb-4 animate-bounce" />
-              <h2 className="text-2xl font-bold mb-2">Merci pour votre soumission !</h2>
-              <p className="text-muted-foreground mb-6">Un modérateur va examiner votre niveau très prochainement.</p>
-              <Button onClick={() => setIsSubmitted(false)} className="bg-primary">Soumettre un autre niveau</Button>
+              <CheckCircle2 className="h-20 w-20 text-primary mb-4 animate-pulse" />
+              <h2 className="text-3xl font-bold gold-text mb-2">Soumission Reçue</h2>
+              <p className="text-muted-foreground mb-6">Merci de contribuer à l'élite du spam français. Votre preuve est entre de bonnes mains.</p>
+              <Button onClick={() => setIsSubmitted(false)} className="bg-primary hover:scale-105 transition-transform">Faire une autre soumission</Button>
             </CardContent>
           </Card>
         </main>
@@ -71,139 +75,92 @@ export default function SubmitPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary neon-text mb-2">Soumettre un Niveau</h1>
-          <p className="text-muted-foreground">Remplissez ce formulaire pour ajouter un défi à la liste officielle.</p>
+      <main className="flex-1 container max-w-3xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black gold-text mb-4">Portail de Soumission</h1>
+          <p className="text-muted-foreground text-lg">Proposez un nouveau défi ou prouvez votre valeur sur un niveau existant.</p>
         </div>
 
-        <Card className="bg-card border-border overflow-hidden">
-          <CardHeader className="bg-primary/5 border-b border-primary/10">
-            <CardTitle className="text-sm font-medium uppercase tracking-wider text-primary">Détails du Challenge</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="levelId"
-                    render={({ field }) => (
+        <Tabs defaultValue="record" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 h-16 bg-muted/50 p-1 rounded-xl gold-border mb-8">
+            <TabsTrigger value="record" className="text-lg flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-black">
+              <Trophy className="h-5 w-5" /> Nouveau Record
+            </TabsTrigger>
+            <TabsTrigger value="level" className="text-lg flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-black">
+              <PlusCircle className="h-5 w-5" /> Proposer un Niveau
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="record">
+            <Card className="bg-card border-border shadow-xl">
+              <CardHeader>
+                <CardTitle className="silver-text uppercase tracking-widest text-sm">Complétion de Niveau</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...recordForm}>
+                  <form onSubmit={recordForm.handleSubmit(onRecordSubmit)} className="space-y-6">
+                    <FormField control={recordForm.control} name="playerName" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ID du Niveau (Geometry Dash)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ex: 12345678" {...field} className="bg-background" />
-                        </FormControl>
+                        <FormLabel>Pseudo (Ingame)</FormLabel>
+                        <FormControl><Input placeholder="Votre nom GD" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="completionPercent"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>List% (Completion)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="ex: 100" {...field} className="bg-background" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                    )} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField control={recordForm.control} name="levelId" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ID du Niveau</FormLabel>
+                          <FormControl><Input placeholder="ex: 12345678" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={recordForm.control} name="videoUrl" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lien Vidéo (YT/Twitch)</FormLabel>
+                          <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                    <Button type="submit" className="w-full h-14 text-lg bg-primary hover:bg-primary/90">Envoyer le Record <Send className="ml-2 h-5 w-5" /></Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nom du Niveau</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ex: Sonic Wave Spam" {...field} className="bg-background" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="creator"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Créateur</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ex: Riot" {...field} className="bg-background" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="videoProof"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lien de Preuve Vidéo (YouTube/Twitch)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://..." {...field} className="bg-background" />
-                      </FormControl>
-                      <FormDescription>La vidéo doit montrer l'exécution du spam clairement.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="enjoyment"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex justify-between">
-                        <FormLabel>Enjoyment Rating (0-100)</FormLabel>
-                        <span className="font-bold text-secondary">{field.value}%</span>
-                      </div>
-                      <FormControl>
-                        <Slider 
-                          defaultValue={[50]} 
-                          max={100} 
-                          step={1} 
-                          onValueChange={(vals) => field.onChange(vals[0])}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description / Commentaires additionnels</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Parlez-nous de ce niveau..." 
-                          className="min-h-[100px] bg-background"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-primary/90">
-                  Envoyer Soumission <Send className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+          <TabsContent value="level">
+            <Card className="bg-card border-border shadow-xl">
+              <CardHeader>
+                <CardTitle className="silver-text uppercase tracking-widest text-sm">Nouveau Challenge pour la Liste</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...levelForm}>
+                  <form onSubmit={levelForm.handleSubmit(onLevelSubmit)} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField control={levelForm.control} name="name" render={({ field }) => (
+                        <FormItem><FormLabel>Nom du Niveau</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                      )} />
+                      <FormField control={levelForm.control} name="creator" render={({ field }) => (
+                        <FormItem><FormLabel>Créateur</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                      )} />
+                    </div>
+                    <FormField control={levelForm.control} name="levelId" render={({ field }) => (
+                      <FormItem><FormLabel>ID GD</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                    )} />
+                    <FormField control={levelForm.control} name="videoProof" render={({ field }) => (
+                      <FormItem><FormLabel>Vidéo de Preuve (Verification)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                    )} />
+                    <FormField control={levelForm.control} name="description" render={({ field }) => (
+                      <FormItem><FormLabel>Commentaires</FormLabel><FormControl><Textarea {...field} /></FormControl></FormItem>
+                    )} />
+                    <Button type="submit" className="w-full h-14 text-lg bg-primary hover:bg-primary/90">Soumettre à la Liste <PlusCircle className="ml-2 h-5 w-5" /></Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

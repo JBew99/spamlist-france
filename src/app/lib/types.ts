@@ -7,6 +7,14 @@ export interface LevelRating {
   timestamp: number;
 }
 
+export interface Record {
+  id: string;
+  playerName: string;
+  videoUrl: string;
+  timestamp: number;
+  status: LevelStatus;
+}
+
 export interface Level {
   id: string; // Internal unique ID
   levelId: string; // Geometry Dash ID
@@ -18,18 +26,31 @@ export interface Level {
   description: string;
   averageRating: number;
   ratings: LevelRating[];
+  records: Record[];
   status: LevelStatus;
 }
 
-export interface Submission {
+export interface LevelSubmission {
   id: string;
+  type: 'new_level';
   levelId: string;
   name: string;
   creator: string;
-  completionPercent: number;
   videoProof: string;
   description: string;
-  initialEnjoyment: number;
   status: LevelStatus;
   timestamp: number;
 }
+
+export interface RecordSubmission {
+  id: string;
+  type: 'completion';
+  levelId: string; // Geometry Dash ID or Internal ID
+  levelName: string;
+  playerName: string;
+  videoUrl: string;
+  status: LevelStatus;
+  timestamp: number;
+}
+
+export type Submission = LevelSubmission | RecordSubmission;

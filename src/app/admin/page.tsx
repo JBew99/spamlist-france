@@ -6,89 +6,123 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Check, X, Eye, ShieldAlert } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Check, X, Eye, ShieldAlert, Zap, Trophy, BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const MOCK_SUBMISSIONS = [
-  { id: "s1", levelId: "99887766", name: "Fast Finger Test", creator: "ClickGod", timestamp: Date.now() - 100000 },
-  { id: "s2", levelId: "55443322", name: "Spam Heaven", creator: "GDSlave", timestamp: Date.now() - 500000 },
+  { id: "s1", type: 'new_level', levelId: "99887766", name: "Fast Finger Test", creator: "ClickGod", timestamp: Date.now() - 100000 },
+  { id: "r1", type: 'completion', levelId: "12345678", levelName: "Ultra Spam v2", playerName: "DarkClipper", videoUrl: "https://yt.com", timestamp: Date.now() - 500000 },
 ];
 
 export default function AdminPage() {
   const { toast } = useToast();
-  const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
+  const [subs, setSubs] = useState(MOCK_SUBMISSIONS);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAction = (id: string, action: 'approve' | 'reject') => {
-    setSubmissions(prev => prev.filter(s => s.id !== id));
+    setSubs(prev => prev.filter(s => s.id !== id));
     toast({
-      title: action === 'approve' ? "Niveau Approuvé" : "Niveau Rejeté",
-      description: `L'action a été enregistrée avec succès.`,
+      title: action === 'approve' ? "Accepté" : "Refusé",
+      description: `L'action a été synchronisée avec la base de données.`,
     });
   };
+
+  const levels = subs.filter(s => s.type === 'new_level');
+  const records = subs.filter(s => s.type === 'completion');
 
   return (
     <div className="flex min-h-screen flex-col">
       <Navigation />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="p-2 bg-red-500/10 text-red-500 rounded-lg">
-            <ShieldAlert className="h-8 w-8" />
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 text-primary rounded-xl gold-border">
+              <ShieldAlert className="h-8 w-8" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-black gold-text">Quartier Général</h1>
+              <p className="text-muted-foreground italic">"La qualité avant la quantité."</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Panel Modérateur</h1>
-            <p className="text-muted-foreground">Gestion des soumissions et de la sécurité du site.</p>
-          </div>
+          <Button variant="outline" className="gold-border text-primary hover:bg-primary/10 gap-2">
+            <BrainCircuit className="h-4 w-4" /> Analyseur IA Auto
+          </Button>
         </div>
 
-        <Card className="border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-            <CardTitle>Soumissions en attente</CardTitle>
-            <Badge variant="outline" className="border-primary text-primary">{submissions.length} nouveaux</Badge>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Niveau</TableHead>
-                  <TableHead>Créateur</TableHead>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {submissions.map((sub) => (
-                  <TableRow key={sub.id}>
-                    <TableCell className="font-medium">{sub.name}</TableCell>
-                    <TableCell>{sub.creator}</TableCell>
-                    <TableCell>{sub.levelId}</TableCell>
-                    <TableCell>{new Date(sub.timestamp).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 border-primary/30 text-primary">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button onClick={() => handleAction(sub.id, 'approve')} size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700">
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button onClick={() => handleAction(sub.id, 'reject')} size="icon" className="h-8 w-8 bg-destructive hover:bg-destructive/90">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {submissions.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">
-                      Aucune soumission en attente. Bon travail !
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="levels" className="w-full">
+          <TabsList className="bg-muted/50 gold-border p-1 h-12 mb-8">
+            <TabsTrigger value="levels" className="gap-2">Niveaux <Badge variant="secondary" className="ml-1">{levels.length}</Badge></TabsTrigger>
+            <TabsTrigger value="records" className="gap-2">Records <Badge variant="secondary" className="ml-1">{records.length}</Badge></TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="levels">
+            <Card className="border-border shadow-2xl">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent border-border">
+                      <TableHead>Niveau</TableHead>
+                      <TableHead>Créateur</TableHead>
+                      <TableHead>ID</TableHead>
+                      <TableHead className="text-right">Décision</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {levels.map((sub) => (
+                      <TableRow key={sub.id} className="border-border">
+                        <TableCell className="font-bold silver-text">{sub.name}</TableCell>
+                        <TableCell>{sub.creator}</TableCell>
+                        <TableCell className="font-mono text-xs">{sub.levelId}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-primary"><Eye /></Button>
+                            <Button onClick={() => handleAction(sub.id, 'approve')} size="icon" className="bg-green-600 h-8 w-8"><Check /></Button>
+                            <Button onClick={() => handleAction(sub.id, 'reject')} size="icon" className="bg-destructive h-8 w-8"><X /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {levels.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-20 text-muted-foreground">Calme plat sur les nouveaux niveaux.</TableCell></TableRow>}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="records">
+            <Card className="border-border shadow-2xl">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent border-border">
+                      <TableHead>Joueur</TableHead>
+                      <TableHead>Challenge</TableHead>
+                      <TableHead>Lien</TableHead>
+                      <TableHead className="text-right">Décision</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {records.map((sub: any) => (
+                      <TableRow key={sub.id} className="border-border">
+                        <TableCell className="font-bold gold-text">{sub.playerName}</TableCell>
+                        <TableCell>{sub.levelName}</TableCell>
+                        <TableCell><a href={sub.videoUrl} target="_blank" className="text-blue-400 underline text-xs">Preuve</a></TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button onClick={() => handleAction(sub.id, 'approve')} size="icon" className="bg-primary text-black h-8 w-8"><Check /></Button>
+                            <Button onClick={() => handleAction(sub.id, 'reject')} size="icon" className="bg-destructive h-8 w-8"><X /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {records.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-20 text-muted-foreground">Aucun exploit en attente de validation.</TableCell></TableRow>}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
