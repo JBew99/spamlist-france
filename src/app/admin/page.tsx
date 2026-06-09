@@ -1,18 +1,87 @@
+
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ShieldAlert, Zap, Lock, Info, AlertTriangle, Check, X, ShieldCheck, Eye } from "lucide-react";
-import { MOCK_PLAYERS } from "@/app/lib/mock-data";
+import { ShieldAlert, Zap, Lock, Eye, Check, X, User } from "lucide-react";
+import { useFirestore, useCollection, useUser } from "@/firebase";
+import { collection, query, where, updateDoc, doc, getDoc, setDoc, increment } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function AdminPage() {
-  const [isAdmin] = useState(true); // Simulé pour le MVP
-  
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+
+  // Simulé pour MVP : Seuls certains emails sont admins
+  const isAdmin = useMemo(() => {
+    return user?.email === "admin@spamlist.fr" || user?.email?.includes("owner");
+  }, [user]);
+
+  const pendingRecordsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "records"), where("status", "==", "pending"));
+  }, [firestore]);
+
+  const pendingLevelsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "levels"), where("status", "==", "pending"));
+  }, [firestore]);
+
+  const { data: records, loading: recordsLoading } = useCollection(pendingRecordsQuery);
+  const { data: levels, loading: levelsLoading } = useCollection(pendingLevelsQuery);
+
+  const handleApproveRecord = async (record: any) => {
+    if (!firestore) return;
+
+    const recordRef = doc(firestore, "records", record.id);
+    const userRef = doc(firestore, "users", record.userId);
+
+    try {
+      // 1. Approuver le record
+      await updateDoc(recordRef, { status: "approved", pointsEarned: 100 }); // Points à ajuster selon difficulté
+
+      // 2. Mettre à jour les stats du joueur
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        await updateDoc(userRef, {
+          points: increment(100),
+          completions: increment(1),
+          trustScore: increment(5)
+        });
+      } else {
+        await setDoc(userRef, {
+          name: record.playerName,
+          points: 100,
+          completions: 1,
+          tier: "Bronze",
+          trustScore: 60,
+          platform: record.platform,
+          bestSpamType: record.spamType
+        });
+      }
+
+      toast({ title: "Record validé", description: `100 points ajoutés à ${record.playerName}` });
+    } catch (e) {
+      errorEmitter.emit("permission-error", new FirestorePermissionError({ path: recordRef.path, operation: "update" }));
+    }
+  };
+
+  const handleRejectRecord = async (recordId: string) => {
+    if (!firestore) return;
+    const recordRef = doc(firestore, "records", recordId);
+    updateDoc(recordRef, { status: "rejected" })
+      .then(() => toast({ title: "Record rejeté" }))
+      .catch(() => errorEmitter.emit("permission-error", new FirestorePermissionError({ path: recordRef.path, operation: "update" })));
+  };
+
   if (!isAdmin) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
@@ -33,20 +102,16 @@ export default function AdminPage() {
               <ShieldAlert className="h-8 w-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-black gold-text">Quartier Général</h1>
+              <h1 className="text-3xl font-black gold-text uppercase">Quartier Général</h1>
               <p className="text-muted-foreground italic">"La confiance est le pilier de l'élite."</p>
             </div>
           </div>
-          <Badge variant="outline" className="gold-border px-4 py-2 flex gap-2">
-            <Zap className="h-4 w-4 text-primary" /> Modération Pulse AI Active
-          </Badge>
         </div>
 
         <Tabs defaultValue="records" className="w-full">
           <TabsList className="bg-muted/50 gold-border p-1 h-12 mb-8">
-            <TabsTrigger value="records" className="gap-2">Records en Attente</TabsTrigger>
-            <TabsTrigger value="levels" className="gap-2">Propositions Niveaux</TabsTrigger>
-            <TabsTrigger value="users" className="gap-2">Gestion Joueurs</TabsTrigger>
+            <TabsTrigger value="records" className="gap-2">Records en Attente ({records?.length || 0})</TabsTrigger>
+            <TabsTrigger value="levels" className="gap-2">Niveaux Proposés ({levels?.length || 0})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="records">
@@ -57,57 +122,66 @@ export default function AdminPage() {
                     <TableRow>
                       <TableHead>Joueur</TableHead>
                       <TableHead>Niveau</TableHead>
-                      <TableHead>Trust Score</TableHead>
+                      <TableHead>Style / FPS</TableHead>
                       <TableHead>Preuve</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow className="border-border">
-                      <TableCell className="font-bold">DarkSpam</TableCell>
-                      <TableCell>Ultra Spam v2</TableCell>
-                      <TableCell><Badge className="bg-green-500/20 text-green-500">92% High</Badge></TableCell>
-                      <TableCell><Button variant="link" size="sm" className="text-primary"><Eye className="h-4 w-4 mr-1"/> Vidéo</Button></TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button size="sm" variant="outline" className="text-green-500 border-green-500/30"><Check className="h-4 w-4"/></Button>
-                        <Button size="sm" variant="outline" className="text-destructive border-destructive/30"><X className="h-4 w-4"/></Button>
-                      </TableCell>
-                    </TableRow>
+                    {records?.map((rec: any) => (
+                      <TableRow key={rec.id} className="border-border">
+                        <TableCell className="font-bold">{rec.playerName}</TableCell>
+                        <TableCell>{rec.levelName}</TableCell>
+                        <TableCell><Badge variant="outline">{rec.spamType} / {rec.fps}fps</Badge></TableCell>
+                        <TableCell>
+                          <a href={rec.videoUrl} target="_blank" rel="noopener noreferrer">
+                            <Button variant="link" size="sm" className="text-primary"><Eye className="h-4 w-4 mr-1"/> Voir</Button>
+                          </a>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button size="sm" variant="outline" onClick={() => handleApproveRecord(rec)} className="text-green-500 border-green-500/30"><Check className="h-4 w-4"/></Button>
+                          <Button size="sm" variant="outline" onClick={() => handleRejectRecord(rec.id)} className="text-destructive border-destructive/30"><X className="h-4 w-4"/></Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {records?.length === 0 && (
+                       <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">Aucun record en attente.</TableCell></TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="users">
-            <div className="grid gap-6">
-              <h3 className="text-xl font-bold silver-text flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-primary" /> Surveillance Trust Score
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {MOCK_PLAYERS.map(p => (
-                  <Card key={p.id} className={`${p.trustScore < 80 ? 'bg-destructive/5 border-destructive/20' : 'bg-card/50 border-border'}`}>
-                    <CardContent className="p-6 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold">{p.name}</p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <ShieldCheck className="h-3 w-3" /> Trust: {p.trustScore}%
-                        </p>
-                      </div>
-                      <Badge variant={p.trustScore < 80 ? 'destructive' : 'outline'}>
-                        {p.trustScore < 80 ? 'Suspect' : 'Fiable'}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
           <TabsContent value="levels">
-             <Card className="border-border bg-card/50">
-              <CardContent className="p-20 text-center italic text-muted-foreground">
-                Aucune proposition de niveau en attente.
+             <Card className="border-border bg-card/50 overflow-hidden">
+              <CardContent className="p-0">
+                <Table>
+                   <TableHeader>
+                    <TableRow>
+                      <TableHead>Nom</TableHead>
+                      <TableHead>Créateur</TableHead>
+                      <TableHead>Difficulté</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {levels?.map((lvl: any) => (
+                      <TableRow key={lvl.id} className="border-border">
+                        <TableCell className="font-bold">{lvl.name}</TableCell>
+                        <TableCell>{lvl.creator}</TableCell>
+                        <TableCell>{lvl.difficulty} pts</TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button size="sm" variant="outline" className="text-green-500 border-green-500/30"><Check className="h-4 w-4"/></Button>
+                          <Button size="sm" variant="outline" className="text-destructive border-destructive/30"><X className="h-4 w-4"/></Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                     {levels?.length === 0 && (
+                       <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Aucune proposition en attente.</TableCell></TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>

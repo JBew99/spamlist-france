@@ -1,0 +1,81 @@
+
+{
+  "entities": {
+    "Level": {
+      "title": "Niveau de la Liste",
+      "description": "Un niveau de spam répertorié sur la plateforme.",
+      "type": "object",
+      "properties": {
+        "levelId": { "type": "string", "description": "ID Geometry Dash" },
+        "name": { "type": "string" },
+        "creator": { "type": "string" },
+        "difficulty": { "type": "number", "description": "Points accordés pour la complétion" },
+        "completionPercent": { "type": "number", "description": "Pourcentage requis pour la liste" },
+        "videoProof": { "type": "string", "format": "url" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "minFps": { "type": "number" },
+        "spamType": { "type": "string" },
+        "verifier": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["levelId", "name", "creator", "difficulty", "status"]
+    },
+    "Record": {
+      "title": "Record de Joueur",
+      "description": "Une preuve de complétion soumise par un joueur.",
+      "type": "object",
+      "properties": {
+        "levelId": { "type": "string" },
+        "levelName": { "type": "string" },
+        "userId": { "type": "string" },
+        "playerName": { "type": "string" },
+        "videoUrl": { "type": "string", "format": "url" },
+        "fps": { "type": "number" },
+        "platform": { "type": "string", "enum": ["PC", "Mobile"] },
+        "spamType": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "pointsEarned": { "type": "number" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["levelId", "userId", "videoUrl", "status"]
+    },
+    "PlayerStats": {
+      "title": "Profil Joueur",
+      "description": "Statistiques et rang d'un joueur.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "points": { "type": "number" },
+        "completions": { "type": "number" },
+        "tier": { "type": "string", "enum": ["Bronze", "Argent", "Or", "Platine", "Diamant", "Élite"] },
+        "bestSpamType": { "type": "string" },
+        "platform": { "type": "string" },
+        "clanId": { "type": "string" },
+        "trustScore": { "type": "number" }
+      }
+    },
+    "Clan": {
+      "title": "Clan / Alliance",
+      "description": "Une équipe de joueurs.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "tag": { "type": "string" },
+        "points": { "type": "number" },
+        "description": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "membersCount": { "type": "number" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/levels/{levelId}": { "schema": "Level", "description": "Niveaux de la liste" },
+    "/records/{recordId}": { "schema": "Record", "description": "Soumissions de records" },
+    "/users/{userId}": { "schema": "PlayerStats", "description": "Profils utilisateurs" },
+    "/clans/{clanId}": { "schema": "Clan", "description": "Clans de joueurs" }
+  }
+}
