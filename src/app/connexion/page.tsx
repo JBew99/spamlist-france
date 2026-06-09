@@ -41,7 +41,10 @@ export default function ConnexionPage() {
   const { toast } = useToast();
 
   const handleProviderLogin = async (provider: any) => {
-    if (!auth || !firestore) return;
+    if (!auth || !firestore) {
+      toast({ variant: "destructive", title: "Erreur de configuration", description: "Firebase n'est pas initialisé. Vérifiez les clés de configuration." });
+      return;
+    }
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
@@ -65,7 +68,31 @@ export default function ConnexionPage() {
       toast({ title: "Accès autorisé", description: `Bienvenue dans l'Elite, ${user.displayName || 'Spammeur'} !` });
       router.push("/");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erreur d'accès", description: "La connexion a échoué." });
+      console.log("[v0] Provider login error:", error?.code, error?.message);
+      let description = "La connexion a échoué.";
+      switch (error?.code) {
+        case "auth/operation-not-allowed":
+          description = "Ce fournisseur n'est pas activé. Activez Google/Twitter dans Firebase Console > Authentication > Sign-in method.";
+          break;
+        case "auth/unauthorized-domain":
+          description = "Domaine non autorisé. Ajoutez ce domaine dans Firebase Console > Authentication > Settings > Authorized domains.";
+          break;
+        case "auth/popup-blocked":
+          description = "La popup a été bloquée par le navigateur. Autorisez les popups pour ce site.";
+          break;
+        case "auth/popup-closed-by-user":
+          description = "Fenêtre de connexion fermée avant la fin.";
+          break;
+        case "auth/configuration-not-found":
+          description = "Configuration Firebase introuvable. Vérifiez vos clés d'API.";
+          break;
+        case "auth/invalid-api-key":
+          description = "Clé API Firebase invalide. Vérifiez vos variables d'environnement.";
+          break;
+        default:
+          description = error?.message || "La connexion a échoué.";
+      }
+      toast({ variant: "destructive", title: "Erreur d'accès", description });
     } finally {
       setLoading(false);
     }
