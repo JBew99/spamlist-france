@@ -12,6 +12,7 @@ import { useAuth, useFirestore } from "@/firebase";
 import { 
   signInWithPopup, 
   GoogleAuthProvider, 
+  TwitterAuthProvider,
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   sendPasswordResetEmail
@@ -19,7 +20,7 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, UserPlus, Chrome, ShieldCheck, Loader2, XLogo } from "lucide-react";
+import { LogIn, UserPlus, Chrome, ShieldCheck, Loader2, X } from "lucide-react";
 
 export default function ConnexionPage() {
   const [email, setEmail] = useState("");
