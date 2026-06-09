@@ -1,7 +1,7 @@
 
 "use client";
 
-import { use, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,8 @@ import { useFirestore, useDoc, useCollection, useUser } from "@/firebase";
 import { doc, collection, query, where, orderBy } from "firebase/firestore";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-export default function ProfilPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ProfilPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const firestore = useFirestore();
   const { user: currentUser } = useUser();
   

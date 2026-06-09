@@ -10,7 +10,11 @@ export function useCollection(query: Query | null) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!query) return;
+    if (!query) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
 
     const unsubscribe = onSnapshot(
       query,

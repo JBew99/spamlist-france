@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { MOCK_LEVELS } from "@/app/lib/mock-data";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ import { Trophy, MessageSquare, Sparkles, Youtube, Calendar, User, Zap } from "l
 import { summarizeLevelComments } from "@/ai/flows/level-comment-summarizer";
 import Image from "next/image";
 
-export default function LevelDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function LevelDetailsPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [isLoadingAi, setIsLoadingAi] = useState(false);
 
