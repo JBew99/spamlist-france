@@ -58,7 +58,10 @@
     "@types/node": "^20",
     "@types/react": "^19.2.1",
     "@types/react-dom": "^19.2.1",
+<<<<<<< HEAD
     "cross-env": "^7.0.3",
+=======
+>>>>>>> 8e0315c81e568e4ff3783c69dc7b56734af3d9e3
     "genkit-cli": "^1.28.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
