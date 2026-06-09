@@ -2,6 +2,8 @@ export type LevelStatus = 'pending' | 'approved' | 'rejected';
 export type Platform = 'PC' | 'Mobile';
 export type SpamType = 'Alternating' | 'Alt-Jitter' | 'Jitter' | 'Button Mashing' | 'Rake' | 'Lip Spam' | 'Butterfly' | 'Telekinesis' | 'Scroll Clicking';
 
+export type UserRank = 'Bronze' | 'Argent' | 'Or' | 'Platine' | 'Diamant' | 'Élite';
+
 export interface LevelRating {
   id: string;
   rating: number;
@@ -11,6 +13,7 @@ export interface LevelRating {
 
 export interface Record {
   id: string;
+  levelId: string;
   playerName: string;
   videoUrl: string;
   timestamp: number;
@@ -18,6 +21,8 @@ export interface Record {
   fps: number;
   platform: Platform;
   spamType: SpamType;
+  pointsEarned: number;
+  rejectionReason?: string;
 }
 
 export interface Level {
@@ -43,10 +48,23 @@ export interface PlayerStats {
   name: string;
   points: number;
   completions: number;
-  rank: number;
+  rank: number; // Position globale
+  tier: UserRank; // Rang visuel
   bestSpamType: SpamType;
   platform: Platform;
   clanId?: string;
+  trustScore: number; // 0-100
+  history: ActivityItem[];
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'completion' | 'rank_up' | 'clan_join' | 'level_add';
+  title: string;
+  description: string;
+  timestamp: number;
+  userId: string;
+  userName: string;
 }
 
 export interface Clan {
@@ -54,7 +72,7 @@ export interface Clan {
   name: string;
   tag: string;
   points: number;
-  members: number;
+  membersCount: number;
   description: string;
   rank: number;
 }
@@ -62,7 +80,7 @@ export interface Clan {
 export interface LevelPack {
   id: string;
   name: string;
-  levels: string[]; // IDs des niveaux
+  levels: string[];
   rewardPoints: number;
   description: string;
 }
