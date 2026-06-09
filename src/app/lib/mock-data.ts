@@ -55,6 +55,13 @@ export const MOCK_LEVELS: Level[] = [
   }
 ];
 
+export const MOCK_PLAYERS: Partial<PlayerStats>[] = [
+  { id: "p-1", name: "Nexus", points: 2500, completions: 45, rank: 1, tier: "Élite", platform: "PC", bestSpamType: "Butterfly", trustScore: 98 },
+  { id: "p-2", name: "Diamond", points: 2100, completions: 38, rank: 2, tier: "Diamant", platform: "PC", bestSpamType: "Alternating", trustScore: 95 },
+  { id: "p-3", name: "SpamGod", points: 1850, completions: 30, rank: 3, tier: "Diamant", platform: "Mobile", bestSpamType: "Jitter", trustScore: 92 },
+  { id: "p-4", name: "Cliquos", points: 1500, completions: 25, rank: 4, tier: "Platine", platform: "PC", bestSpamType: "Rake", trustScore: 88 },
+];
+
 export const MOCK_CLANS: Clan[] = [
   { id: "clan-1", name: "Spam Elites France", tag: "SEF", points: 2750, rank: 1, membersCount: 12, description: "Le clan numéro 1 en France." },
   { id: "clan-2", name: "Click Masters", tag: "CM", points: 1420, rank: 2, membersCount: 8, description: "La précision avant tout." },
@@ -70,5 +77,5 @@ export const MOCK_PACKS: LevelPack[] = [
 ];
 
 export const MOCK_CHANGELOG: ChangelogEntry[] = [
-  { id: "ch-1", date: Date.now(), title: "V2.1 : L'Ere du Prestige", changes: ["Auth Google \u0026 X", "Système de Rangs dynamiques", "Graphiques de progression", "Filtres avancés Hz/Style"] },
+  { id: "ch-1", date: Date.now(), title: "V2.1 : L'Ere du Prestige", changes: ["Auth Google & X", "Système de Rangs dynamiques", "Graphiques de progression", "Filtres avancés Hz/Style"] },
 ];
